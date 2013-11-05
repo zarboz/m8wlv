@@ -1909,12 +1909,28 @@ config MSM_DEVFREQ_CPUBW
 	select DEVFREQ_GOV_POWERSAVE
 	select DEVFREQ_GOV_USERSPACE
 	select DEVFREQ_GOV_MSM_CPUFREQ
+	
 	default n
 	help
 	  Different devfreq governors use this devfreq device to make CPU to
 	  DDR IB/AB bandwidth votes. This driver provides a SoC topology
 	  agnostic interface to so that some of the devfreq governors can be
 	  shared across SoCs.
+	
+config CPU_OVERCLOCK
+	bool "Enable CPU Overclocking"
+	default n
+	help
+	  Krait overclocking
+
+config CPU_UNDERCLOCK
+	bool "Enable CPU Underclocking"
+	default n
+	help
+	  Krait underclocking
+
+
+
 
 config MSM_CPU_VOLTAGE_CONTROL
 	bool "Userspace CPU Voltage Control"
