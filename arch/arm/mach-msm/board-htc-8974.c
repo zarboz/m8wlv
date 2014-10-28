@@ -363,7 +363,7 @@ int __init htc_cpu_usage_register(void)
 }
 #endif
 
-static int __maybe_unused m8wl_usb_product_id_match_array[] = {
+static int m8wl_usb_product_id_match_array[] = {
 		0x0ff8, 0x0e65, 
 		0x0fa4, 0x0eab, 
 		0x0fa5, 0x0eac, 
@@ -377,7 +377,7 @@ static int __maybe_unused m8wl_usb_product_id_match_array[] = {
 		-1,
 };
 
-static int __maybe_unused m8wl_usb_product_id_rndis[] = {
+static int m8wl_usb_product_id_rndis[] = {
 	0x0762, 
 	0x0768, 
 	0x0763, 
@@ -387,7 +387,7 @@ static int __maybe_unused m8wl_usb_product_id_rndis[] = {
 	0x07bf, 
 	0x07c3, 
 };
-static int __maybe_unused m8wl_usb_product_id_match(int product_id, int intrsharing)
+static int m8wl_usb_product_id_match(int product_id, int intrsharing)
 {
 	int *pid_array = m8wl_usb_product_id_match_array;
 	int *rndis_array = m8wl_usb_product_id_rndis;
@@ -444,7 +444,7 @@ static struct android_usb_platform_data android_usb_pdata = {
 	.usb_rmnet_interface = "smd,bam",
 	.usb_diag_interface = "diag",
 	.fserial_init_string = "smd:modem,tty,tty:autobot,tty:serial,tty:autobot,tty:acm",
-#ifdef CONFIG_MACH_DUMMY
+#ifdef CONFIG_MACH_M8_WL
 	.match = m8wl_usb_product_id_match,
 #endif
 	.nluns = 1,
@@ -606,7 +606,25 @@ static void __init htc_8974_early_memory(void)
 	of_scan_flat_dt(dt_scan_for_memory_hole, htc_8974_reserve_table);
 }
 
+#ifdef CONFIG_BRICKED_THERMAL
+static struct msm_thermal_data msm_thermal_pdata = {
+	.sensor_id = 0,
+	.poll_ms = 400,
+	.shutdown_temp = 94,
 
+	.allowed_max_high = 90,
+	.allowed_max_low = 86,
+	.allowed_max_freq = 300000,
+
+	.allowed_mid_high = 87,
+	.allowed_mid_low = 82,
+	.allowed_mid_freq = 960000,
+
+	.allowed_low_high = 85,
+	.allowed_low_low = 79,
+	.allowed_low_freq = 1728000,
+};
+#endif
 #if defined(CONFIG_LCD_KCAL)
 extern int g_kcal_r;
 extern int g_kcal_g;
@@ -788,7 +806,11 @@ void __init htc_8974_add_drivers(void)
 	krait_power_init();
 	msm_clock_init(&msm8974_clock_init_data);
 	tsens_tm_init_driver();
+#ifdef CONFIG_BRICKED_THERMAL
+	msm_thermal_init(&msm_thermal_pdata);
+#else
 	msm_thermal_device_init();
+#endif
 #if defined(CONFIG_HTC_BATT_8960)
 	htc_batt_cell_register();
 	msm8974_add_batt_devices();
